@@ -1,0 +1,59 @@
+<!-- edit-user.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit User</title>
+</head>
+
+<body>
+  <h1>Edit User Information</h1>
+  <form id="edit-user-form">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required /><br />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required /><br />
+
+    <button type="submit">Update User</button>
+  </form>
+
+  <script>
+    // Fetch user data based on user ID and fill the form
+    const userId = window.location.pathname.split("/").pop(); // Get the user ID from the URL
+    console.log("User ID: ", userId);
+    fetch(`/api/registered-users/${userId}`)
+      .then((response) => response.json())
+      .then((user) => {
+        document.getElementById("email").value = user.email;
+        document.getElementById("password").value = user.password;
+      })
+      .catch((err) => console.error("Error fetching user data:", err));
+
+    // Handle form submission to update user data
+    document
+      .getElementById("edit-user-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        fetch(`/api/update-user/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("User updated successfully!");
+            window.location.href = "/"; // Redirect to login page after update
+          })
+          .catch((err) => console.error("Error updating user:", err));
+      });
+  </script>
+</body>
+
+</html>
